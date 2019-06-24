@@ -19,11 +19,11 @@ namespace PushRequest.Controllers
     [AllowAnonymous]
     public class NotifyController : Controller
     {
-        private IHubContext<ChatHub> _hubContext;
-        private string apiurl= "https://notify-api.line.me/api/";
-        private IMemoryCache _cache;
+        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly string apiurl= "https://notify-api.line.me/api/";
+        private readonly IMemoryCache _cache;
 
-        private string _cachekey = "";
+        private readonly string _cachekey = "";
 
         public NotifyController(IHubContext<ChatHub> hubContext, IMemoryCache cache)
         {
@@ -46,9 +46,11 @@ namespace PushRequest.Controllers
                 str = str.Replace("&gt;", "");
                 str = str.Replace("&#xD;", "");
 
-                EventXmlModel json = new EventXmlModel();
-                json.CreatedBy = str.Split("/CreatedBy")[0].Split("CreatedBy")[1].Trim();
-                json.PullRequestUri = str.Split("/PullRequestUri")[0].Split("PullRequestUri")[1].Trim();
+                EventXmlModel json = new EventXmlModel
+                {
+                    CreatedBy = str.Split("/CreatedBy")[0].Split("CreatedBy")[1].Trim(),
+                    PullRequestUri = str.Split("/PullRequestUri")[0].Split("PullRequestUri")[1].Trim()
+                };
 
                 _hubContext.Clients.All.SendAsync("Push", JsonConvert.SerializeObject(json));
                 APIPost(accesstoken, "notify", json.CreatedBy + " 有一個PR，請有空的人看一下 : " + json.PullRequestUri);
@@ -70,8 +72,10 @@ namespace PushRequest.Controllers
 
         public void APIPost(string accesstoken, string action, string message)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(apiurl);
+            HttpClient client = new HttpClient
+            {
+                BaseAddress = new Uri(apiurl)
+            };
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accesstoken);
             Dictionary<string, string> formDataDictionary = new Dictionary<string, string>()
             {
@@ -87,13 +91,13 @@ namespace PushRequest.Controllers
             }
             else
             {
-                var respons = result.Content.ReadAsStringAsync().Result;
+                _ = result.Content.ReadAsStringAsync().Result;
             }
         }
       
         public class LineNotify
         {
-            public string message { get; set; }
+            public string Message { get; set; }
         }
     }
 }
