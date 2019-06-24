@@ -1,0 +1,98 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <title>PR</title>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="/css/site.min.css" />*@
+    <link rel="stylesheet" href="/lib/twitter-bootstrap/css/bootstrap.css" />
+    <style>
+        pre {
+            padding: 2px;
+            margin: 0;
+        }
+    </style>
+
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js" crossorigin="anonymous" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+    </script>
+    <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+    </script>
+
+    <script src="/lib/signalr/dist/browser/signalr.js"></script>
+    @*<script src="/js/site.min.js"></script>*@
+</head>
+<body>
+    <div class="container-fluid body-content">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <label>
+                            Push Request
+                        </label>
+                    </div>
+                    <div class="panel-body" id="body1">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <label>
+                            Chat
+                        </label>
+                    </div>
+                    <div class="panel-body" id="body2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Reference the SignalR library. -->
+
+        <script>
+            "use strict";
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("../chatHub")
+                .build();
+            connection.on("Commit", function (content) {
+                var pre = $('<pre></pre>');
+                var json = JSON.parse(content);
+                var jsonstr = JSON.stringify(json, null, 4);
+                pre.text(jsonstr);
+                $("#body1").prepend(pre);
+            });
+            connection.on("Push", function (content) {
+                var pre = $('<pre></pre>');
+                var json = JSON.parse(content);
+                var jsonstr = JSON.stringify(json, null, 4);
+                pre.text(jsonstr);
+                $("#body1").prepend(pre);
+            });
+            connection.on("Chat", function (content) {
+                var pre = $('<pre></pre>');
+                var json = JSON.parse(content);
+                var jsonstr = JSON.stringify(json, null, 4);
+                pre.text(jsonstr);
+                $("#body2").prepend(pre);
+            });
+            connection.start();
+
+        </script>
+
+    </div>
+
+
+
+
+
+</body>
+</html>
