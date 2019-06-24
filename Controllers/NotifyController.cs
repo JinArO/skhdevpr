@@ -52,8 +52,7 @@ namespace PushRequest.Controllers
                     PullRequestUri = str.Split("/PullRequestUri")[0].Split("PullRequestUri")[1].Trim()
                 };
 
-                _hubContext.Clients.All.SendAsync("Push", JsonConvert.SerializeObject(json));
-                APIPost(accesstoken, "notify", json.CreatedBy + " 有一個PR，請有空的人看一下 : " + json.PullRequestUri);
+                _hubContext.Clients.All.SendAsync("Push", JsonConvert.SerializeObject(json)); 
 
                 var prePullRequestUri = _cache.Get<string>(_cachekey);
                 if (prePullRequestUri == json.PullRequestUri)
@@ -63,7 +62,7 @@ namespace PushRequest.Controllers
                 else
                 {
                     _cache.Set(_cachekey, json.PullRequestUri);
-                    APIPost(accesstoken, "notify", json.CreatedBy + " : " + json.PullRequestUri);
+                    APIPost(accesstoken, "notify", json.CreatedBy + " 有一個PR，請有空的人看一下 : " + json.PullRequestUri);
                 }
 
             }
